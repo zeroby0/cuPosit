@@ -1,6 +1,6 @@
 from icecream import ic
 import torch
-from src.cuPosit import pgemm
+import src as cuposit
 
 
 seed=42
@@ -25,13 +25,11 @@ A = (torch.rand(3, 3, 3, dtype=torch.float32, device="cuda") * 64) - 32
 B = (torch.rand(3, 3, 3, dtype=torch.float32, device="cuda") * 64) - 32
 C = torch.zeros_like(A)
 
-D = pgemm(A, B, C, alpha=1.0, beta=1.0)
-
+D = cuposit.bspgemm(A, B, C, alpha=1.0, beta=1.0)
 
 printmat(A, 'A')
 printmat(B, 'B')
 printmat(D, 'Posit-not')
 printmat(A@B + C, 'Float32')
 
-
-
+assert torch.allclose(D, A@B + C)

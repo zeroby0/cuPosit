@@ -73,5 +73,5 @@ torch::Tensor bspgemm(
 }
 
 PYBIND11_MODULE(TORCH_EXTENSION_NAME, m) {
-    m.def("bspgemm", &bspgemm, "Batched strided Posit GEMM using CUTLASS");
+    m.def("bspgemm", &bspgemm, "Batched Strided Posit GEMM");
 }
