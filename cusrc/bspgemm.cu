@@ -3,10 +3,22 @@
 // For NCHW, or other shapes, use im2col (https://docs.pytorch.org/docs/stable/generated/torch.nn.Unfold.html),
 // unsqueeze/squeeze, etc.
 
+// TODO: Completely get rid of CUPOSIT_ENABLED later.
+// If the user needs float arithmetic, they should use built-in
+// arithmetic
+// It's here right now to enable debugging
+// note that it's also in mma_sm50.h
+
+__constant__ unsigned CUPOSIT_ENABLED;
+__constant__ unsigned CUPOSIT_EXP_MIN;
+__constant__ unsigned CUPOSIT_EXP_MAX;
+__constant__ unsigned CUPOSIT_NMANTISSA_MAX;
+
 
 #include <torch/extension.h>
 #include "cutlass/gemm/device/gemm_batched.h"
 #include <cutlass/layout/matrix.h>
+
 
 torch::Tensor bspgemm(
     torch::Tensor A,
@@ -28,6 +40,15 @@ torch::Tensor bspgemm(
 
     TORCH_CHECK(B.size(0) == batch_count && B.size(1) == K, "B dimension mismatch");
     TORCH_CHECK(C.size(0) == batch_count && C.size(1) == M && C.size(2) == N, "C dimension mismatch");
+
+    unsigned const host_cuposit_enabled = 1;
+    unsigned const host_cuposit_exp_min = 127 - 64;
+    unsigned const host_cuposit_exp_max = 127 + 64;
+    unsigned const host_cuposit_nmantissa_max = 15;
+    cudaMemcpyToSymbol(CUPOSIT_ENABLED, &host_cuposit_enabled, sizeof(unsigned));
+    cudaMemcpyToSymbol(CUPOSIT_EXP_MIN, &host_cuposit_exp_min, sizeof(unsigned));
+    cudaMemcpyToSymbol(CUPOSIT_EXP_MAX, &host_cuposit_exp_max, sizeof(unsigned));
+    cudaMemcpyToSymbol(CUPOSIT_NMANTISSA_MAX, &host_cuposit_nmantissa_max, sizeof(unsigned));
 
     using Gemm = cutlass::gemm::device::GemmBatched<
         float,
