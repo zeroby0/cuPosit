@@ -73,7 +73,9 @@ struct Mma<gemm::GemmShape<1, 1, 1>, 1, float, LayoutA, float, LayoutB, float, L
 #if defined(__CUDA_ARCH__)
     // posit_n will be the same value for every single thread, 
     // so there's no SIMT divergence here, despite the branch
-    d[0] = (CUPOSIT_ENABLED == 0) ? (a[0] * b[0] + c[0]) : posit_clip(  posit_clip( posit_clip(a[0]) * posit_clip(b[0]) ) + c[0]);
+    // d[0] = (CUPOSIT_ENABLED == 0) ? (a[0] * b[0] + c[0]) : posit_clip( a[0] * b[0] ) + c[0];
+    // d[0] = posit_clip(posit_clip( a[0] * b[0]) + c[0]);
+    d[0] = posit_clip(  posit_clip( posit_clip(a[0]) * posit_clip(b[0]) ) + c[0]);
 #else
     d[0] = a[0] * b[0] + c[0];
 #endif

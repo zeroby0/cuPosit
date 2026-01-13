@@ -29,8 +29,8 @@ torch::Tensor bspgemm(
                 "Only float32 supported");
     TORCH_CHECK(A.dim() == 3 && B.dim() == 3 && C.dim() == 3, "Expected 3D tensors");
     TORCH_CHECK(A.is_contiguous() && B.is_contiguous() && C.is_contiguous(), "Tensors must be contiguous");
-    TORCH_CHECK(posit_es == 2, "Only posit_es == 2 is supported");
-    TORCH_CHECK(posit_n >= 4 && posit_n <= 28, "Only 4 <= posit_n <= 28 is supported");
+    // TORCH_CHECK(posit_es == 2, "Only posit_es == 2 is supported");
+    // TORCH_CHECK(posit_n >= 4 && posit_n <= 28, "Only 4 <= posit_n <= 28 is supported");
 
     int batch_count = A.size(0);
     int M = A.size(1);
@@ -40,9 +40,10 @@ torch::Tensor bspgemm(
     TORCH_CHECK(B.size(0) == batch_count && B.size(1) == K, "B dimension mismatch");
     TORCH_CHECK(C.size(0) == batch_count && C.size(1) == M && C.size(2) == N, "C dimension mismatch");
 
-    printf("in cudaPosit(%u, %u)\n", posit_n, posit_es);
+    // printf("in cudaPosit(%u, %u)\n", posit_n, posit_es);
 
-    unsigned const host_cuposit_enabled = (posit_n == 0) ? 0 : 1;
+    // unsigned const host_cuposit_enabled = (posit_n == 0) ? 0 : 1;
+    unsigned const host_cuposit_enabled = 0;
     unsigned const host_cuposit_nmantissa_max = posit_n - 3 - posit_es; // 1 bit for sign, 2 for regime, and posit_es bits for exponent
     unsigned const host_cuposit_exp_min = 127 - ((host_cuposit_nmantissa_max + 1) * 4 - 1);
     unsigned const host_cuposit_exp_max = 127 + ((host_cuposit_nmantissa_max + 1) * 4 - 1);
