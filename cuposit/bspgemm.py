@@ -23,16 +23,17 @@ except ImportError:
 #     verbose=True
 # )
 
-def bspgemm(A, B, C, alpha=1.0, beta=1.0, posit=(0, 0)):
+def bspgemm(A, B, C, alpha=1.0, beta=1.0, posit=(28, 2)):
     detach = lambda x: x.detach().contiguous().clone()
 
-    if posit != (0, 0):
-        raise NotImplementedError("Posit support not implemented yet")
+    if (posit[0] >= 4 and posit[1] == 2) or posit == (0, 0):
+        return _CUDA.bspgemm(
+            detach(A),
+            detach(B),
+            detach(C),
+            alpha, beta,
+            posit[0], posit[1]
+        )
 
-    return _CUDA.bspgemm(
-        detach(A),
-        detach(B),
-        detach(C),
-        alpha, beta
-    )
+    raise ValueError(f"Invalid Posit configuration: {posit}. See Usage section of readme.")
 

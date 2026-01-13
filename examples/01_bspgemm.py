@@ -25,11 +25,11 @@ A = (torch.rand(3, 3, 3, dtype=torch.float32, device="cuda") * 64) - 32
 B = (torch.rand(3, 3, 3, dtype=torch.float32, device="cuda") * 64) - 32
 C = torch.zeros_like(A)
 
-D = cuposit.bspgemm(A, B, C, alpha=1.0, beta=1.0)
+D = cuposit.bspgemm(A, B, C, alpha=1.0, beta=1.0, posit=(6, 2))
 
 printmat(A, 'A')
 printmat(B, 'B')
-printmat(D, 'Posit-not')
+printmat(D, 'Posit?')
 printmat(A@B + C, 'Float32')
 
 assert torch.allclose(D, A@B + C)
