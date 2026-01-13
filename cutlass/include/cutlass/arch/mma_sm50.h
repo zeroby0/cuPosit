@@ -47,38 +47,6 @@
 namespace cutlass {
 namespace arch {
 
-/////////////////////////////////////////////////////////////////////////////////////////////////
-// https://maknee.github.io/blog/2025/Maybe-Consider-Putting-Cutlass-In-Your-CUDA-Kernels/
-CUTLASS_DEVICE uint32_t cutlass_lutmap(uint32_t input) {
-    uint32_t offset = 126 + (input >= 127);
-    input -= offset;
-    uint32_t result = CUPOSIT_NMANTISSA_MAX - (input >> 2);
-    return result & -((int32_t)result < 0);  // returns 0 if negative, result otherwise
-}
-
-CUTLASS_DEVICE float posit_clip(float number) {
-    // uint32_t bitmask = (0x807FFFFF & (0xFFFFFFFF << (23 - nmantissa)));
-    // uint32_t xbits = __float_as_uint(x);
-    // xbits = (xbits & bitmask) & (((uint32_t) exp) << 23);
-    // return __uint_as_float(xbits);
-
-    // overwrites exponent and truncates mantissa
-    // to really round mantissa, it should be incremented when the
-    // msb of cutoff bits is 1. but we aren't doing that here.
-
-    // posit_* variables are available in constant memory
-
-    uint32_t x_exponent = (__float_as_uint(number) >> 23) & 0xFF; // see if frexpf is faster
-    x_exponent = min( max(x_exponent, CUPOSIT_EXP_MIN), CUPOSIT_EXP_MAX);
-
-    const uint32_t nmantissa_for_exp = cutlass_lutmap(x_exponent);
-
-    return __uint_as_float(
-        (__float_as_uint(number) & (0x807FFFFF & (0xFFFFFFFF << (23 - nmantissa_for_exp)))) |
-        ((x_exponent) << 23)
-    );
-} 
-
 /// Matrix multiply-add operation
 template <
   /// Layout of A matrix
