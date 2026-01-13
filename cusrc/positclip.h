@@ -5,7 +5,7 @@ __constant__ unsigned CUPOSIT_NMANTISSA_MAX;
 
 /////////////////////////////////////////////////////////////////////////////////////////////////
 // https://maknee.github.io/blog/2025/Maybe-Consider-Putting-Cutlass-In-Your-CUDA-Kernels/
-__forceinline__ __device__ unsigned cutlass_lutmap(unsigned input) {
+__forceinline__ __device__ unsigned lutmap(unsigned input) {
     // if input(exponent) is >= 0 (127), find difference from 0 (127) and divide by 4
     // if input(exponent) is < 0 (127), find difference from -1 (126) and divide by 4
     // and then subtract the result from the highest mantissa possible
@@ -28,7 +28,7 @@ __forceinline__ __device__ float posit_clip(float number) {
 
     // unset exponent bits and unneeded mantissa bits, and then copy exponent bits
     return __uint_as_float(
-        (__float_as_uint(number) & (0x807FFFFF & (0xFFFFFFFF << (23 - cutlass_lutmap(x_exponent))))) |
+        (__float_as_uint(number) & (0x807FFFFF & (0xFFFFFFFF << (23 - lutmap(x_exponent))))) |
         ((x_exponent) << 23)
     );
 }
