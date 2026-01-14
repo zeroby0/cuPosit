@@ -35,12 +35,9 @@ def bspgemm(A, B, C, alpha=1.0, beta=1.0, posit=(28, 2)):
             posit[0], posit[1]
         )
 
-        C.copy_(result) # btw, _C and result point to the same tensor
-
         del _A
         del _B
-        del _C
 
-        return C
+        return result
 
     raise ValueError(f"Invalid Posit configuration: {posit}. See Usage section of readme.")
