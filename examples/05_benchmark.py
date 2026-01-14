@@ -58,8 +58,8 @@ def compare_with_torch(
     M: int = 512,
     N: int = 512,
     K: int = 512,
-    posit_n: int = 0,
-    posit_es: int = 0,
+    posit_n: int = 16,
+    posit_es: int = 2,
     iters: int = 100
 ):    
     A = torch.randn(batch, M, K, device='cuda')
@@ -90,8 +90,8 @@ def compare_with_torch(
     print(f"\n{'='*60}")
     print(f"Comparison: batch={batch}, M={M}, N={N}, K={K}")
     print(f"{'='*60}")
-    print(f"Posit GEMM:  {posit_time*1000:.3f}ms | {flops/posit_time/1e9:.2f} GFLOPS")
-    print(f"Torch BMM:   {torch_time*1000:.3f}ms | {flops/torch_time/1e9:.2f} GFLOPS")
+    print(f"Posit GEMM:  {posit_time*1000/iters:.3f}ms | {flops/posit_time/1e9:.2f} GFLOPS")
+    print(f"Torch BMM:   {torch_time*1000/iters:.3f}ms | {flops/torch_time/1e9:.2f} GFLOPS")
     print(f"Speedup:     {torch_time/posit_time:.3f}x")
     print(f"{'='*60}\n")
 
@@ -108,7 +108,7 @@ if __name__ == '__main__':
     #     bench_iters=50
     # )
     
-    compare_with_torch(batch=16, M=512, N=512, K=512, iters=100)
+    compare_with_torch(batch=16, M=1024, N=1024, K=1024, iters=100)
     
     # print("\nResults summary:")
     # results_arr = np.array([(r['batch'], r['M'], r['N'], r['K'], r['gflops']) 
