@@ -13,7 +13,7 @@ def train(nepochs):
         for inputs, labels in train_loader:            
             optimizer.zero_grad()
 
-            with dispatcher:      # <----------------------- here. Dispatching Forward pass only.
+            with dispatcher:      # <---- here. Dispatching Forward pass only.
                 outputs = model(inputs)
 
             loss = criterion(outputs, labels)
@@ -23,7 +23,7 @@ def train(nepochs):
 
 This makes torch ops: `mm`, `addmm`, `matmul`, `bmm`, and `convolution` run in Posit for Forward Pass.
 The Backward Pass still happens in Float32. Gradients are in Float32 as well. 
-See examples folder for a full training example.
+See **Examples** folder for a full training example.
 
 The operations are about 8-10 times slower than Float32 (4 TOPS compared to 30-40 TOPS for FP32), so this
 library is only expected to be used for QAT-ing a model already trained in Float32.
@@ -85,5 +85,12 @@ uv pip install -e .
 
 Then go into the examples folder and run any example you'd like.
 
+## Contribution and License
 
+Contributions are very welcome and appreciated. 
+You're also welcome to fork this repo and make any changes you'd like.
+Please create an Issue on Github if you face any issues.
 
+You're also free to modify and use this library in any way you see fit for research/personal use,
+however, it's licensed with AGPLv3, and requires freely published source code for commercial use.
+If you use this in your acedemic publication, please cite us.
