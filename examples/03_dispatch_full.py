@@ -5,7 +5,7 @@ from torchvision import datasets, transforms
 from local_datasets.cifar10 import train_loader, test_loader, image_transform, dsetname, dsetnclasses
 
 from cuposit.dispatcher import MatMulDispatcher
-dispatcher = MatMulDispatcher()
+dispatcher = MatMulDispatcher(positnes=(28, 2))
 
 
 class SimpleConvNet(nn.Module):

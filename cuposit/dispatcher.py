@@ -5,9 +5,9 @@ from cuposit import ops as cuposit_ops
 
 
 class MatMulDispatcher(TorchDispatchMode):
-    def __init__(self, positnes=(0, 0)):
+    def __init__(self, positnes=(28, 2)):
         self.positnes = positnes
-        self.enabled = True
+        self.enabled = True if positnes != (0, 0) else False
 
     def __torch_dispatch__(self, func, types, args=(), kwargs=None):
         kwargs = kwargs or {}
