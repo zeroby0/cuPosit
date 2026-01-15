@@ -5,7 +5,7 @@ from torchvision import datasets, transforms
 from local_datasets.cifar10 import train_loader, test_loader, image_transform, dsetname, dsetnclasses
 
 from cuposit.dispatcher import MatMulDispatcher
-dispatcher = MatMulDispatcher(positnes=(28, 2))
+dispatcher = MatMulDispatcher(positnes=(16, 2))
 
 
 class SimpleConvNet(nn.Module):
@@ -45,7 +45,7 @@ def train(epochs=5):
             
             optimizer.zero_grad()
 
-            with dispatcher:      # <----------------------- here. Dispatching Forward pass only.
+            with dispatcher:      # <---- here. Dispatching Forward pass only.
                 outputs = model(inputs)
 
             loss = criterion(outputs, labels)
@@ -71,6 +71,17 @@ def test():
     
     print(f'Accuracy: {100 * correct / total:.2f}%')
 
+
 if __name__ == '__main__':
-    train(epochs=1)
+    # Train in Float32
+    dispatcher.enabled = False
+    train(epochs=10)
+    test()
+
+    # Reduce Learning Rate, and QAT for Posit
+    for g in optimizer.param_groups:
+        g['lr'] = 0.0001
+
+    dispatcher.enabled = True
+    train(epochs=2)
     test()
