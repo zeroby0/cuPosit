@@ -39,7 +39,7 @@ optimizer = optim.Adam(model.parameters(), lr=0.001)
 def train(epochs=5):
     model.train()
     for epoch in range(epochs):
-        running_loss = 0.0
+        print(f"Epoch: {epoch+1}/{epochs}")
         for i, (inputs, labels) in enumerate(train_loader):
             inputs, labels = inputs.to(device), labels.to(device)
             
@@ -50,12 +50,7 @@ def train(epochs=5):
 
             loss = criterion(outputs, labels)
             loss.backward()
-            optimizer.step()
-            
-            running_loss += loss.item()
-            if i % 100 == 99:
-                print(f'[{epoch + 1}, {i + 1}] loss: {running_loss / 100:.3f}')
-                running_loss = 0.0
+            optimizer.step()            
 
 def test():
     model.eval()
@@ -64,7 +59,10 @@ def test():
     with torch.no_grad():
         for inputs, labels in test_loader:
             inputs, labels = inputs.to(device), labels.to(device)
-            outputs = model(inputs)
+
+            with dispatcher:     # <---- here as well, so that we measure quantised accuray
+                outputs = model(inputs)
+
             _, predicted = torch.max(outputs.data, 1)
             total += labels.size(0)
             correct += (predicted == labels).sum().item()
@@ -74,11 +72,13 @@ def test():
 
 if __name__ == '__main__':
     # Train in Float32
+    print("Training in Float32")
     dispatcher.enabled = False
     train(epochs=10)
     test()
 
     # Reduce Learning Rate, and QAT for Posit
+    print("\nQAT with Posit")
     for g in optimizer.param_groups:
         g['lr'] = 0.0001
 
