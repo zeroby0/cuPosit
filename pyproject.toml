@@ -38,3 +38,16 @@ cuposit = ["*.so", "*.pyd"]
 
 [tool.uv]
 package = true
+
+[tool.uv.workspace]
+members = [
+    ".",
+]
+
+[tool.uv.sources]
+cuposit = { workspace = true}
+
+[dependency-groups]
+dev = [
+    "cuposit",
+]

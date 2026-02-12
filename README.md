@@ -36,9 +36,8 @@ For other implementations of Posit arithmetic, see the Implementations section i
 # Installation
 
 1. Clone this directory into your project folder.
-2. Activate your Python virtual environment.
-3. `cd` into this folder.
-4. Run `pip install -e ./cuPosit/`.
+2. `cd` into this folder.
+3. `uv sync`
 
 Now you can use cuposit in your environment. 
 
@@ -52,8 +51,9 @@ Install `uv`: https://docs.astral.sh/uv/getting-started/installation/#installati
 ```sh
 curl -LsSf https://astral.sh/uv/install.sh | sh
 uv python install 3.12
+uv pin python 3.12
 uv sync
-source .venv/bin/activate
+uv run <file>.py
 ```
 
 Then go into the examples folder and run any example you'd like.
